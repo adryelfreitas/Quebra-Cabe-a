@@ -50,27 +50,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentSongIndex = 0;
 
-    let gridSize = 8;
-    const totalImageDimension = 480;
+    let gridSize = 8; // Dificuldade padrão: Médio (8x8)
+    const totalImageDimension = 480; // A largura/altura total da imagem cortada para o puzzle (px)
 
     let totalPieces;
     let pieceSize;
 
     let pieces = [];
-    let currentDragPiece = null;
-    let currentImageUrl = '';
+    let currentDragPiece = null; // Para mouse drag
+    let currentTouchPiece = null; // Para touch drag
+
+    // Variáveis para touch drag
+    let initialTouchX = 0;
+    let initialTouchY = 0;
+    let touchOffsetX = 0;
+    let touchOffsetY = 0;
+
 
     let startTime = 0;
     let elapsedTime = 0;
     let timerInterval = null;
     let moves = 0;
-
-    // NOVO: Variáveis para o Touch Drag & Drop
-    let initialX = 0;
-    let initialY = 0;
-    let offsetX = 0;
-    let offsetY = 0;
-    let currentTouchPiece = null;
 
 
     // Funções de controle da playlist de música (mantidas)
@@ -167,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 1. Criar as peças do quebra-cabeça (ADICIONAR EVENTOS DE TOUCH AQUI)
+    // 1. Criar as peças do quebra-cabeça (Listeners para Mouse E Touch)
     function createPuzzlePieces() {
         currentImageUrl = puzzleImages[Math.floor(Math.random() * puzzleImages.length)];
         document.getElementById('full-puzzle-preview').src = currentImageUrl;
@@ -188,17 +188,16 @@ document.addEventListener('DOMContentLoaded', () => {
             piece.style.width = `${pieceSize}px`;
             piece.style.height = `${pieceSize}px`;
 
-            // REMOVIDO: dragstart, dragend
-            // ADICIONADO: Eventos de TOUCH para mobile
+            // ----- LISTENERS PARA MOUSE DRAG & DROP -----
+            piece.setAttribute('draggable', true); // Essencial para mouse drag
+            piece.addEventListener('dragstart', handleDragStart);
+            piece.addEventListener('dragend', handleDragEnd);
+
+            // ----- LISTENERS PARA TOUCH DRAG & DROP -----
             piece.addEventListener('touchstart', handleTouchStart, { passive: false });
             piece.addEventListener('touchmove', handleTouchMove, { passive: false });
             piece.addEventListener('touchend', handleTouchEnd);
             piece.addEventListener('touchcancel', handleTouchEnd); // Em caso de interrupção
-
-            // Mantido para compatibilidade com mouse/desktop (se não remover draggable=true)
-            piece.setAttribute('draggable', true);
-            piece.addEventListener('dragstart', handleDragStart);
-            piece.addEventListener('dragend', handleDragEnd);
 
             pieces.push(piece);
         }
@@ -206,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
         pieces.forEach(piece => puzzleContainer.appendChild(piece));
     }
 
-    // 2. Criar os espaços no tabuleiro (ADICIONAR EVENTOS DE TOUCH AQUI)
+    // 2. Criar os espaços no tabuleiro (Listeners para Mouse Drag & Drop)
     function createPuzzleBoardSlots() {
         puzzleBoard.innerHTML = '';
         for (let i = 0; i < totalPieces; i++) {
@@ -217,10 +216,12 @@ document.addEventListener('DOMContentLoaded', () => {
             slot.style.width = `${pieceSize}px`;
             slot.style.height = `${pieceSize}px`;
 
-            // REMOVIDO: dragover, dragenter, dragleave, drop
-            // ADICIONADO: Eventos de TOUCH para mobile
-            // Não há dragover/enter/leave para touch de slots, a lógica é diferente
-            slot.addEventListener('drop', handleDrop); // Mantido para compatibilidade com mouse/desktop
+            // ----- LISTENERS PARA MOUSE DRAG & DROP -----
+            slot.addEventListener('dragover', handleDragOver);
+            slot.addEventListener('dragenter', handleDragEnter);
+            slot.addEventListener('dragleave', handleDragLeave);
+            slot.addEventListener('drop', handleDrop); // drop do mouse
+
             puzzleBoard.appendChild(slot);
         }
     }
@@ -235,33 +236,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 4. FUNÇÕES DE DRAG & DROP (MANTIDAS, MAS TOUCH TERÁ PRECEDÊNCIA)
-    // Essas funções são para o mouse/desktop. Para mobile, as funções de touch abaixo assumem o controle.
+    // ----- FUNÇÕES DE DRAG & DROP PARA MOUSE (Adaptadas) -----
     function handleDragStart(event) {
         currentDragPiece = event.target;
         event.dataTransfer.setData('text/plain', event.target.dataset.index);
-        setTimeout(() => {
-            event.target.classList.add('hide');
-            currentDragPiece.classList.add('dragging');
-            // NOVO: Adiciona um estilo temporário para a peça arrastada para não sumir visualmente
-            event.target.style.opacity = '0.7'; 
-        }, 0);
+        // NOVO: Adiciona um estilo temporário para a peça arrastada para não sumir visualmente
+        currentDragPiece.style.opacity = '0.7'; 
+        currentDragPiece.classList.add('dragging'); // Para brilho/sombra
     }
 
     function handleDragEnd(event) {
-        event.target.classList.remove('hide');
-        currentDragPiece.classList.remove('dragging');
-        // NOVO: Remove o estilo temporário
-        event.target.style.opacity = ''; 
+        currentDragPiece.style.opacity = ''; // Remove o estilo temporário
+        currentDragPiece.classList.remove('dragging'); // Remove brilho/sombra
+        // Remove qualquer destaque de drop target que possa ter sobrado
         document.querySelectorAll('.puzzle-slot.droptarget').forEach(slot => {
             slot.classList.remove('droptarget');
         });
+        currentDragPiece = null; // Reseta a peça arrastada
     }
 
-    // handleDragOver, handleDragEnter, handleDragLeave - A lógica de feedback para mouse
-    // A lógica de drop será compartilhada entre mouse e touch.
+    // Feedback visual para mouse (mantido)
     function handleDragOver(event) {
-        event.preventDefault();
+        event.preventDefault(); // Permite drop
     }
     function handleDragEnter(event) {
         event.preventDefault();
@@ -279,117 +275,79 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // FUNÇÃO DE DROP (Compartilhada entre mouse e touch)
-    function handleDrop(event) {
-        event.preventDefault(); // Necessário para drop do mouse
-        let droppedPiece;
-        let targetSlot;
-        
-        // Determina se o drop veio do mouse (event.dataTransfer) ou touch (currentTouchPiece)
-        if (event.dataTransfer && event.dataTransfer.getData('text/plain')) {
-            const droppedPieceIndex = event.dataTransfer.getData('text/plain');
-            droppedPiece = document.querySelector(`.puzzle-piece[data-index="${droppedPieceIndex}"]`);
-            targetSlot = event.target.closest('.puzzle-slot');
-        } else if (currentTouchPiece) { // Se for touch event
-            droppedPiece = currentTouchPiece;
-            const touch = event.changedTouches[0]; // Pega a posição do toque final
-            targetSlot = getDropTargetForTouch(touch.clientX, touch.clientY); // Função auxiliar para touch
-            
-            // Limpa estilos temporários da peça touch
-            currentTouchPiece.style.position = '';
-            currentTouchPiece.style.transform = '';
-            currentTouchPiece.style.zIndex = '';
-            currentTouchPiece.classList.remove('dragging'); // Remove dragging class
-            currentTouchPiece = null; // Reseta a peça touch atual
-        } else {
-            return; // Nenhuma peça sendo arrastada/tocada
+    // LÓGICA DE COLOCAR A PEÇA NO LUGAR (FUNÇÃO AUXILIAR COMPARTILHADA)
+    function placePiece(piece, targetSlot) {
+        if (parseInt(piece.dataset.index) === parseInt(targetSlot.dataset.index)) {
+            targetSlot.appendChild(piece);
+            piece.classList.add('placed');
+            piece.style.cursor = 'default';
+            moves++;
+            movesDisplay.textContent = moves;
+            correctPieceSound.play().catch(e => console.log("Erro ao tocar som de peça correta:", e));
+            checkWin();
+            return true; // Peça colocada com sucesso
         }
+        return false; // Peça não colocada
+    }
 
-        // Limpa o destaque do slot de destino, independentemente do sucesso
+    // FUNÇÃO DE DROP PARA MOUSE (Chama a função auxiliar)
+    function handleDrop(event) {
+        event.preventDefault();
+        const droppedPieceIndex = event.dataTransfer.getData('text/plain');
+        const droppedPiece = document.querySelector(`.puzzle-piece[data-index="${droppedPieceIndex}"]`);
+        const targetSlot = event.target.closest('.puzzle-slot');
+
         if (targetSlot) {
             targetSlot.classList.remove('droptarget');
         }
-
-        if (targetSlot && !targetSlot.children.length) { // Se o slot existe e está vazio
-            if (parseInt(droppedPiece.dataset.index) === parseInt(targetSlot.dataset.index)) {
-                targetSlot.appendChild(droppedPiece);
-                droppedPiece.classList.add('placed');
-                droppedPiece.style.cursor = 'default';
-                moves++;
-                movesDisplay.textContent = moves;
-                correctPieceSound.play().catch(e => console.log("Erro ao tocar som de peça correta:", e));
-                checkWin();
-            } else {
-                // Se o drop estiver incorreto, a peça pode voltar para sua posição original
-                // ou apenas não se mover (como está agora).
-                // Para simplificar, ela só se anexa se estiver no lugar certo e vazio.
-            }
-        } else if (droppedPiece && currentDragPiece === droppedPiece) { // Para o caso do mouse drag, se não encontrou slot válido
-            // Isso é um tratamento básico para o caso de arrasto de mouse que não achou drop target válido.
-            // Para touch, a peça já volta ao "normal" em handleTouchEnd
-            // Considerar como a peça retorna à sua posição original se não houver um drop válido
+        
+        if (droppedPiece && targetSlot) { // Certifica-se de que há uma peça e um slot
+            placePiece(droppedPiece, targetSlot);
         }
     }
 
-    // NOVO: Função auxiliar para encontrar o slot de drop para eventos de toque
-    function getDropTargetForTouch(x, y) {
-        // Obter todos os slots e verificar qual deles está sob o toque
-        const slots = document.querySelectorAll('.puzzle-slot');
-        for (let i = 0; i < slots.length; i++) {
-            const rect = slots[i].getBoundingClientRect(); // Pega a posição e tamanho do slot
-            if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
-                return slots[i]; // Retorna o slot se o toque estiver dentro dele
-            }
-        }
-        return null; // Nenhum slot encontrado
-    }
 
-
-    // NOVO: FUNÇÕES PARA TOUCH DRAG & DROP
+    // ----- FUNÇÕES DE DRAG & DROP PARA TOUCH (Completamente Separadas) -----
     function handleTouchStart(event) {
-        // Apenas para um dedo (multi-touch não suportado neste drag-and-drop simples)
-        if (event.touches.length === 1) {
+        if (event.touches.length === 1) { // Apenas um dedo
+            event.preventDefault(); // Previne rolagem/zoom da página
             currentTouchPiece = event.target;
-            // Garante que a peça pode ser movida livremente
-            currentTouchPiece.style.position = 'absolute'; 
-            currentTouchPiece.style.zIndex = '200'; // Acima de tudo
+            
+            // Posiciona a peça para ser arrastada livremente
+            currentTouchPiece.style.position = 'absolute';
+            currentTouchPiece.style.zIndex = '200';
+            currentTouchPiece.style.opacity = '0.7'; // Feedback visual
+            currentTouchPiece.classList.add('dragging'); // Para brilho/sombra
 
             // Calcula o offset inicial (onde o dedo tocou na peça)
             const rect = currentTouchPiece.getBoundingClientRect();
-            initialX = event.touches[0].clientX;
-            initialY = event.touches[0].clientY;
-            offsetX = initialX - rect.left;
-            offsetY = initialY - rect.top;
-
-            // Adiciona classes para feedback visual
-            currentTouchPiece.classList.add('dragging');
-            
-            // Opcional: Para evitar rolagem da página enquanto arrasta a peça
-            event.preventDefault(); 
+            initialTouchX = event.touches[0].clientX;
+            initialTouchY = event.touches[0].clientY;
+            touchOffsetX = initialTouchX - rect.left;
+            touchOffsetY = initialTouchY - rect.top;
         }
     }
 
     function handleTouchMove(event) {
-        if (currentTouchPiece) {
-            event.preventDefault(); // Previne rolagem da página enquanto arrasta
+        if (currentTouchPiece && event.touches.length === 1) {
+            event.preventDefault(); // Previne rolagem/zoom da página
             const touchX = event.touches[0].clientX;
             const touchY = event.touches[0].clientY;
 
             // Move a peça para seguir o dedo, ajustando pelo offset inicial
-            currentTouchPiece.style.left = `${touchX - offsetX}px`;
-            currentTouchPiece.style.top = `${touchY - offsetY}px`;
+            currentTouchPiece.style.left = `${touchX - touchOffsetX}px`;
+            currentTouchPiece.style.top = `${touchY - touchOffsetY}px`;
 
-            // NOVO: Feedback visual do slot alvo (simula dragenter/dragleave para touch)
+            // Feedback visual do slot alvo (simula dragenter/dragleave para touch)
             const targetSlot = getDropTargetForTouch(touchX, touchY);
-            // Limpa o droptarget de todos os slots primeiro
+            // Limpa o droptarget de todos os slots primeiro, exceto o atual
             document.querySelectorAll('.puzzle-slot.droptarget').forEach(slot => {
                 if (slot !== targetSlot) slot.classList.remove('droptarget');
             });
 
             if (targetSlot && !targetSlot.children.length) {
-                // Se a peça atual é a correta para este slot, ou apenas para qualquer slot vazio
                 if (parseInt(currentTouchPiece.dataset.index) === parseInt(targetSlot.dataset.index)) {
-                     targetSlot.classList.add('droptarget');
+                    targetSlot.classList.add('droptarget');
                 }
             }
         }
@@ -397,15 +355,53 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleTouchEnd(event) {
         if (currentTouchPiece) {
-            // Dispara a lógica de drop, usando a peça touch como referência
-            // A função handleDrop será adaptada para lidar com mouse ou touch
-            handleDrop(event); // Reutiliza a função handleDrop
+            const touch = event.changedTouches[0]; // Pega a posição do toque final
+            const targetSlot = getDropTargetForTouch(touch.clientX, touch.clientY); // Encontra o slot de destino
 
-            // Limpa o estado após o drop
-            // As propriedades de posição e classes são limpas dentro de handleDrop agora para touch
-            currentTouchPiece = null;
+            // Limpa o droptarget de todos os slots que possam estar destacados
+            document.querySelectorAll('.puzzle-slot.droptarget').forEach(slot => {
+                slot.classList.remove('droptarget');
+            });
+
+            // Tenta colocar a peça no lugar
+            const placed = (targetSlot && !targetSlot.children.length) ? placePiece(currentTouchPiece, targetSlot) : false;
+
+            // Se a peça não foi colocada com sucesso, ou se foi solta fora de um slot válido
+            if (!placed) {
+                // Opcional: fazer a peça "voltar" visualmente à sua posição original
+                // Para simplificar, apenas remove os estilos de arrasto:
+                currentTouchPiece.style.position = '';
+                currentTouchPiece.style.transform = ''; // Limpa qualquer transformação de arrasto
+                currentTouchPiece.style.left = '';
+                currentTouchPiece.style.top = '';
+                currentTouchPiece.style.zIndex = '';
+                currentTouchPiece.style.opacity = '';
+                currentTouchPiece.classList.remove('dragging');
+            } else {
+                // Se foi colocada, os estilos já são manipulados por placePiece e suas classes
+                currentTouchPiece.style.position = ''; // Remove o absoluto
+                currentTouchPiece.style.left = '';
+                currentTouchPiece.style.top = '';
+                currentTouchPiece.style.zIndex = '';
+                currentTouchPiece.style.opacity = '';
+                currentTouchPiece.classList.remove('dragging');
+            }
+            currentTouchPiece = null; // Reseta a peça touch atual
         }
     }
+
+    // NOVO: Função auxiliar para encontrar o slot de drop para eventos de toque
+    function getDropTargetForTouch(x, y) {
+        const slots = document.querySelectorAll('.puzzle-slot');
+        for (let i = 0; i < slots.length; i++) {
+            const rect = slots[i].getBoundingClientRect();
+            if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+                return slots[i];
+            }
+        }
+        return null;
+    }
+
 
     // 5. Verificar vitória (mantida)
     function checkWin() {
