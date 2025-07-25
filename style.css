@@ -1,13 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400;700&display=swap');
 
-/* ... O restante do seu CSS começa aqui ... */
-
-
-
-
-
 body {
-    font-family: 'Open Sans', sans-serif; /* NOVO: Aplica Open Sans como fonte principal */
+    font-family: 'Open Sans', sans-serif;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -17,6 +11,7 @@ body {
     position: relative; /* Para posicionar a preview absolutamente */
     min-height: 100vh; /* Garante que o corpo ocupa toda a altura da tela */
 }
+
 h1 {
     color: #2c3e50;
     margin-bottom: 20px;
@@ -35,25 +30,25 @@ h1 {
 }
 
 #current-song-title { /* Estilo para o nome da música */
-    font-size: 1.2em; /* Um pouco maior */
+    font-size: 1.2em;
     font-weight: bold;
-    color: #2c3e50; /* Cor mais escura, para destacar */
+    color: #2c3e50;
     margin-bottom: 15px;
     text-align: center;
-    text-transform: uppercase; /* Deixa em maiúsculas, se quiser */
-    letter-spacing: 1px; /* Espaçamento entre letras */
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.1); /* Sombra suave */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
 }
 
 audio {
     width: 300px;
-    margin-top: 10px; /* Mantém espaço entre controles e o player padrão */
+    margin-top: 10px;
 }
 
 .audio-controls {
     display: flex;
     gap: 15px;
-    margin-bottom: 10px; /* Mantém espaço abaixo dos botões de controle */
+    margin-bottom: 10px;
 }
 
 .audio-controls button {
@@ -85,7 +80,7 @@ audio {
 /* Estilos para os contadores de tempo e movimentos */
 .game-stats {
     display: flex;
-    gap: 30px; /* Espaço entre Tempo e Movimentos */
+    gap: 30px;
     margin-bottom: 20px;
     font-size: 1.1em;
     font-weight: bold;
@@ -97,32 +92,68 @@ audio {
 }
 
 .game-stats span {
-    color: #007bff; /* Cor para os números */
+    color: #007bff;
+}
+
+/* Estilos para o Seletor de Dificuldade */
+.difficulty-selector {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+    background-color: #f5f5f5;
+    padding: 10px 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.difficulty-selector p {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #444;
+    margin: 0;
+}
+
+.difficulty-selector button {
+    padding: 8px 15px;
+    font-size: 0.95em;
+    cursor: pointer;
+    background-color: #5cb85c;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.difficulty-selector button:hover {
+    background-color: #4cae4c;
+    transform: translateY(-1px);
+}
+
+.difficulty-selector button.active {
+    background-color: #007bff;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
 }
 
 #puzzle-wrapper {
     display: flex;
-    gap: 40px; /* Espaço entre o container de peças e o tabuleiro */
+    gap: 40px;
     margin-bottom: 30px;
-    flex-wrap: wrap; /* Para que os containers quebrem a linha em telas menores */
+    flex-wrap: wrap;
     justify-content: center;
     align-items: flex-start;
-    width: 100%; /* Ocupa toda a largura disponível */
-    max-width: 1200px; /* Limita a largura máxima para não ficar muito esticado em telas grandes */
+    width: 100%;
+    max-width: 1200px;
 }
 
 #puzzle-container, #puzzle-board {
     display: grid;
-    /* Ajuste para 8x8 peças */
-    grid-template-columns: repeat(8, 60px); /* 8 colunas de 60px = 480px de largura da imagem */
-    grid-template-rows: repeat(8, 60px);    /* 8 linhas de 60px = 480px de altura da imagem */
     gap: 2px;
     padding: 5px;
-    /* Largura/Altura total: 8 * 60px (peças) + 7 * 2px (gaps) + 2 * 5px (padding) */
-    width: calc(8 * 60px + 7 * 2px + 2 * 5px); /* 480 + 14 + 10 = 504px */
-    height: calc(8 * 60px + 7 * 2px + 2 * 5px); /* 504px */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    flex-shrink: 0; /* Impede que os grids encolham mais do que o necessário */
+    flex-shrink: 0;
 }
 
 #puzzle-container {
@@ -136,28 +167,23 @@ audio {
 }
 
 .puzzle-piece {
-    width: 60px; /* Cada peça terá 60px de largura */
-    height: 60px; /* Cada peça terá 60px de altura */
-    border: 1px solid rgba(0, 0, 0, 0.1); /* Borda mais suave */
-    background-size: 480px 480px; /* A imagem de fundo total é 480x480px */
+    border: 1px solid rgba(0, 0, 0, 0.1);
     cursor: grab;
-    transition: transform 0.1s ease; /* Adiciona uma pequena transição ao arrastar */
+    transition: transform 0.1s ease;
 }
 
 .puzzle-piece:active {
     cursor: grabbing;
-    z-index: 100; /* Garante que a peça arrastada fique acima de outras */
+    z-index: 100;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
 .puzzle-piece.placed {
     cursor: default;
-    border: 1px solid rgba(0, 128, 0, 0.3); /* Borda verde suave para peças colocadas */
+    border: 1px solid rgba(0, 128, 0, 0.3);
 }
 
 .puzzle-slot {
-    width: 60px;
-    height: 60px;
     border: 1px dashed #aaa;
     display: flex;
     justify-content: center;
@@ -170,49 +196,36 @@ audio {
 }
 
 /* Adicione esta regra para a peça arrastada no feedback visual */
-/* ... seu CSS existente ... */
-
 .puzzle-piece.dragging {
-    /* Mantido: Brilho amarelo e levemente maior */
     box-shadow: 0 0 15px rgba(255, 255, 0, 0.8), 0 0 25px rgba(255, 255, 0, 0.5);
     transform: scale(1.05);
-    
-    /* NOVO: Estilos para a peça arrastada no touch */
-    position: absolute; /* Para poder mover livremente com top/left */
-    z-index: 200;       /* Acima de tudo */
-    cursor: grabbing;   /* Mudar o cursor para indicar que está sendo arrastada */
-}
-
-/* ... seu CSS existente continua ... */
-
-/* Adicione estas media queries para o mobile, ajustando o tamanho do h1 */
-@media (max-width: 550px) {
-    h1 {
-        font-size: 1.8em; /* Título menor para caber */
-        text-align: center;
-        padding: 0 10px; /* Adiciona um pouco de padding para não grudar nas bordas */
-    }
-
-    /* ... outras regras existentes aqui ... */
+    z-index: 200;
 }
 
 /* Adicione esta regra para o slot de destino */
 .puzzle-slot.droptarget {
-    background-color: rgba(0, 255, 0, 0.2); /* Fundo verde transparente */
-    border: 2px dashed #0f0; /* Borda verde */
+    background-color: rgba(0, 255, 0, 0.2);
+    border: 2px dashed #0f0;
+}
+
+/* Estilos para o grupo de botões */
+.game-buttons {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+    margin-bottom: 30px;
 }
 
 #reset-button {
     padding: 12px 25px;
     font-size: 18px;
     cursor: pointer;
-    background-color: #3498db; /* Azul mais moderno */
+    background-color: #3498db;
     color: white;
     border: none;
     border-radius: 8px;
     transition: background-color 0.3s ease, transform 0.2s ease;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
 }
 
 #reset-button:hover {
@@ -220,25 +233,42 @@ audio {
     transform: translateY(-2px);
 }
 
+#help-button {
+    padding: 12px 25px;
+    font-size: 18px;
+    cursor: pointer;
+    background-color: #f0ad4e;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#help-button:hover {
+    background-color: #ec971f;
+    transform: translateY(-2px);
+}
+
 /* Estilos para a TELA DE VITÓRIA */
 #win-screen {
-    position: fixed; /* Fixa na tela, cobrindo tudo */
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7); /* Fundo semi-transparente escuro */
+    background-color: rgba(0, 0, 0, 0.7);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000; /* Garante que fique acima de tudo */
-    opacity: 1; /* Opacidade inicial (será controlada pelo JS) */
-    transition: opacity 0.5s ease-in-out; /* Transição suave */
+    z-index: 1000;
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out;
 }
 
 #win-screen.hidden {
-    opacity: 0; /* Esconde a tela de vitória */
-    pointer-events: none; /* Não permite cliques quando escondido */
+    opacity: 0;
+    pointer-events: none;
 }
 
 .win-content {
@@ -247,39 +277,34 @@ audio {
     border-radius: 15px;
     text-align: center;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
-    transform: scale(1); /* Escala inicial */
-    transition: transform 0.3s ease-out; /* Transição para o efeito de escala */
+    transform: scale(1);
+    transition: transform 0.3s ease-out;
 }
 
 #win-screen.hidden .win-content {
-    transform: scale(0.8); /* Reduz um pouco quando escondido */
+    transform: scale(0.8);
 }
 
-
-/* ... seu CSS existente até aqui ... */
-
 .win-content h2 {
-    color: #28a745; /* Cor verde para o parabéns */
+    color: #28a745;
     font-size: 3em;
     margin-bottom: 15px;
-    font-family: 'Montserrat', sans-serif; /* NOVO: Aplica a fonte Montserrat */
-    font-weight: 700; /* Garante que seja negrito conforme importado */
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
 }
 
 .win-content p {
     font-size: 1.2em;
     color: #555;
     margin-bottom: 30px;
-    font-family: 'Open Sans', sans-serif; /* NOVO: Aplica a fonte Open Sans */
+    font-family: 'Open Sans', sans-serif;
 }
-
-/* ... o restante do seu CSS continua ... */
 
 #play-again-btn {
     padding: 15px 30px;
     font-size: 1.2em;
     cursor: pointer;
-    background-color: #3498db; /* Azul */
+    background-color: #3498db;
     color: white;
     border: none;
     border-radius: 8px;
@@ -292,80 +317,75 @@ audio {
     transform: translateY(-2px);
 }
 
-/* ... seu CSS existente até a seção .preview-container ... */
-
 /* Estilos para a pré-visualização da imagem completa */
 .preview-container {
-    position: absolute; /* Posição absoluta em relação ao body */
+    position: absolute;
     top: 20px;
     right: 20px;
     border: 1px solid #ccc;
     box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
     overflow: hidden;
-    background-color: #fff; /* Fundo branco para a caixa da prévia */
-    padding: 5px; /* Reduzi um pouco o padding para diminuir a borda branca */
+    background-color: #fff;
+    padding: 5px;
     border-radius: 8px;
     text-align: center;
-    z-index: 10; /* Garante que fique acima de outros elementos */
-    width: fit-content; /* NOVO: Ajusta a largura ao conteúdo interno */
-    max-width: 160px; /* NOVO: Adiciona um limite para não crescer demais, se necessário */
+    z-index: 10;
+    width: fit-content;
+    max-width: 160px;
 }
 
 .preview-container p {
     margin: 5px 0 5px 0;
     font-size: 0.9em;
     color: #555;
-    font-family: 'Open Sans', sans-serif; /* NOVO: Aplica a fonte Open Sans */
-    font-weight: bold; /* Opcional: para deixar mais forte */
+    font-family: 'Open Sans', sans-serif;
+    font-weight: bold;
 }
 
 #full-puzzle-preview {
-    width: 100%; /* Garante que a imagem ocupe 100% da largura do pai */
+    width: 100%;
     height: auto;
     display: block;
     border-radius: 5px;
 }
 
-/* ... seu CSS existente continua ... */
-
 /* Estilos para a MODAL DE IMAGEM AMPLIADA */
 #image-modal {
-    display: flex; /* Para centralizar o conteúdo */
+    display: flex;
     align-items: center;
     justify-content: center;
-    position: fixed; /* Fica sobre tudo */
-    z-index: 2000; /* Acima de tudo, incluindo a tela de vitória */
+    position: fixed;
+    z-index: 2000;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto; /* Permite rolagem se a imagem for muito grande */
-    background-color: rgba(0,0,0,0.9); /* Fundo preto semi-transparente */
-    opacity: 1; /* Opacidade inicial (será controlada pelo JS) */
-    transition: opacity 0.3s ease-in-out; /* Transição suave */
+    overflow: auto;
+    background-color: rgba(0,0,0,0.9);
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out;
 }
 
 #image-modal.hidden {
     opacity: 0;
-    pointer-events: none; /* Não permite cliques quando escondido */
+    pointer-events: none;
 }
 
 .modal-content {
     margin: auto;
     display: block;
-    width: 80%; /* Largura máxima da imagem na modal */
-    max-width: 700px; /* Largura máxima absoluta */
+    width: 80%;
+    max-width: 700px;
     height: auto;
     border-radius: 8px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-    transform: scale(1); /* Escala inicial */
-    transition: transform 0.2s ease-out; /* Transição para o efeito de escala */
+    transform: scale(1);
+    transition: transform 0.2s ease-out;
 }
 
 #image-modal.hidden .modal-content {
-    transform: scale(0.9); /* Reduz um pouco quando escondido */
+    transform: scale(0.9);
 }
-
 
 .close-modal {
     position: absolute;
@@ -385,125 +405,13 @@ audio {
     cursor: pointer;
 }
 
-/* Responsividade: Ajustes para telas menores (smartphones e tablets) */
-@media (max-width: 960px) { /* Ajustei o breakpoint para 960px, ideal para tablets em modo paisagem */
-    #puzzle-wrapper {
-        flex-direction: column; /* Em telas menores, os elementos ficam em coluna */
-        align-items: center;
-        gap: 20px;
-    }
-    
-    .preview-container {
-        position: static; /* Volta para o fluxo normal em telas menores */
-        margin-top: 20px;
-        margin-bottom: 20px;
-        width: calc(100% - 40px); /* Ajusta largura para preencher */
-        right: auto;
-        top: auto;
-    }
-}
-
-/* Ajustes finos para tamanhos de tela ainda menores (smartphones) */
-@media (max-width: 550px) {
-    #puzzle-container, #puzzle-board {
-        grid-template-columns: repeat(8, 35px); /* Diminui ainda mais o tamanho das peças */
-        grid-template-rows: repeat(8, 35px);
-        width: calc(8 * 35px + 7 * 2px + 2 * 5px); /* 280 + 14 + 10 = 304px */
-        height: calc(8 * 35px + 7 * 2px + 2 * 5px); /* 304px */
-    }
-    .puzzle-piece, .puzzle-slot {
-        width: 35px;
-        height: 35px;
-        background-size: 280px 280px; /* Ajusta o background-size para a nova imagem total */
-    }
-}
-
-/* Se a tela for realmente pequena e o puzzle não couber, podemos dar um overflow */
-@media (max-width: 360px) {
-    #puzzle-wrapper {
-        overflow-x: auto; /* Permite rolagem horizontal se o conteúdo for muito largo */
-        padding-bottom: 10px; /* Espaço para a barra de rolagem */
-    }
-}
-/* ... seu CSS existente ... */
-
-/* Estilos para o Seletor de Dificuldade (NOVA ADIÇÃO) */
-.difficulty-selector {
-    display: flex;
-    align-items: center;
-    gap: 15px; /* Espaço entre os botões e o texto */
-    margin-bottom: 25px; /* Espaço abaixo do seletor */
-    background-color: #f5f5f5;
-    padding: 10px 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-.difficulty-selector p {
-    font-size: 1.1em;
-    font-weight: bold;
-    color: #444;
-    margin: 0; /* Remove margem padrão do parágrafo */
-}
-
-.difficulty-selector button {
-    padding: 8px 15px;
-    font-size: 0.95em;
-    cursor: pointer;
-    background-color: #5cb85c; /* Verde para fácil/selecionado */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    transition: background-color 0.2s ease, transform 0.1s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.difficulty-selector button:hover {
-    background-color: #4cae4c;
-    transform: translateY(-1px);
-}
-
-.difficulty-selector button.active { /* Classe para o botão de dificuldade ativo */
-    background-color: #007bff; /* Azul para o ativo */
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
-    transform: translateY(-2px);
-}
-
-/* ... seu CSS existente continua ... */
-/* ... seu CSS existente ... */
-
-/* Estilos para o grupo de botões (NOVA ADIÇÃO) */
-.game-buttons {
-    display: flex;
-    gap: 20px; /* Espaço entre os botões */
-    margin-top: 20px; /* Espaço acima dos botões */
-    margin-bottom: 30px; /* Espaço abaixo dos botões */
-}
-
-#help-button { /* Estilos para o botão de Ajuda */
-    padding: 12px 25px;
-    font-size: 18px;
-    cursor: pointer;
-    background-color: #f0ad4e; /* Cor laranja/amarelo para Ajuda */
-    color: white;
-    border: none;
-    border-radius: 8px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-#help-button:hover {
-    background-color: #ec971f;
-    transform: translateY(-2px);
-}
-
-/* Estilos para a MODAL DE INSTRUÇÕES/AJUDA (NOVA ADIÇÃO) */
+/* Estilos para a MODAL DE INSTRUÇÕES/AJUDA */
 #help-modal {
     display: flex;
     align-items: center;
     justify-content: center;
     position: fixed;
-    z-index: 2000; /* Acima de tudo */
+    z-index: 2000;
     left: 0;
     top: 0;
     width: 100%;
@@ -519,16 +427,16 @@ audio {
     pointer-events: none;
 }
 
-#help-modal .modal-content { /* Reutiliza estilos da modal de imagem, mas ajusta para texto */
+#help-modal .modal-content {
     background-color: #fefefe;
     margin: auto;
     padding: 30px;
     border: 1px solid #888;
     width: 80%;
-    max-width: 600px; /* Largura máxima para a modal de texto */
+    max-width: 600px;
     border-radius: 15px;
     box-shadow: 0 5px 20px rgba(0,0,0,0.4);
-    position: relative; /* Para o botão de fechar */
+    position: relative;
     transform: scale(1);
     transition: transform 0.2s ease-out;
 }
@@ -538,7 +446,7 @@ audio {
 }
 
 #help-modal h2 {
-    color: #3498db; /* Azul para o título da ajuda */
+    color: #3498db;
     font-size: 2.5em;
     margin-bottom: 20px;
     text-align: center;
@@ -552,7 +460,7 @@ audio {
 }
 
 #help-modal ul {
-    list-style-type: none; /* Remove bolinhas */
+    list-style-type: none;
     padding: 0;
     margin-bottom: 20px;
 }
@@ -565,16 +473,16 @@ audio {
     position: relative;
 }
 
-#help-modal ul li:before { /* Adiciona uma bolinha personalizada */
+#help-modal ul li:before {
     content: "•";
-    color: #28a745; /* Cor da bolinha */
+    color: #28a745;
     font-weight: bold;
     display: inline-block;
     width: 1em;
     margin-left: -1em;
 }
 
-.close-modal-help { /* Estilo para o 'X' de fechar a modal de ajuda */
+.close-modal-help {
     position: absolute;
     top: 15px;
     right: 25px;
@@ -592,15 +500,48 @@ audio {
     cursor: pointer;
 }
 
-/* ... seu CSS existente continua ... */
-
-/* Responsividade para a modal de ajuda */
-@media (max-width: 768px) {
-    #help-modal .modal-content {
-        width: 95%;
-        padding: 20px;
+/* Responsividade: Ajustes para telas menores (smartphones e tablets) */
+@media (max-width: 960px) {
+    #puzzle-wrapper {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
     }
-    #help-modal h2 {
-        font-size: 2em;
+    
+    .preview-container {
+        position: static;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        width: calc(100% - 40px);
+        right: auto;
+        top: auto;
+    }
+}
+
+/* Ajustes finos para tamanhos de tela ainda menores (smartphones) */
+@media (max-width: 550px) {
+    h1 { /* Ajuste para o h1 em telas pequenas */
+        font-size: 1.8em;
+        text-align: center;
+        padding: 0 10px;
+    }
+
+    #puzzle-container, #puzzle-board {
+        grid-template-columns: repeat(var(--grid-size), var(--piece-size)); /* Usando variáveis CSS */
+        grid-template-rows: repeat(var(--grid-size), var(--piece-size));
+        width: calc(var(--total-puzzle-dim) + (var(--grid-size) - 1) * 2px + 10px); /* Recalcula a largura */
+        height: calc(var(--total-puzzle-dim) + (var(--grid-size) - 1) * 2px + 10px);
+    }
+    .puzzle-piece, .puzzle-slot {
+        width: var(--piece-size);
+        height: var(--piece-size);
+    }
+}
+
+/* Se a tela for realmente pequena e o puzzle não couber, podemos dar um overflow */
+@media (max-width: 360px) {
+    #puzzle-wrapper {
+        overflow-x: auto;
+        padding-bottom: 10px;
     }
 }
