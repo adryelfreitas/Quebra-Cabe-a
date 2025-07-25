@@ -398,7 +398,7 @@ document.addEventListener('DOMContentLoaded', () => {
         createPuzzlePieces();
         createPuzzleBoardSlots();
         
-        matueMusicPlayer.volume = 0.1;
+        matueMusicPlayer.volume = 0.05;
 
         if (matueSongs.length > 0) {
             playSong(currentSongIndex);
