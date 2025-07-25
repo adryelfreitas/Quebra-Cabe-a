@@ -170,10 +170,30 @@ audio {
 }
 
 /* Adicione esta regra para a peça arrastada no feedback visual */
+/* ... seu CSS existente ... */
+
 .puzzle-piece.dragging {
-    box-shadow: 0 0 15px rgba(255, 255, 0, 0.8), 0 0 25px rgba(255, 255, 0, 0.5); /* Brilho amarelo */
-    transform: scale(1.05); /* Levemente maior */
-    z-index: 200; /* Garante que ela esteja acima de tudo durante o arrasto */
+    /* Mantido: Brilho amarelo e levemente maior */
+    box-shadow: 0 0 15px rgba(255, 255, 0, 0.8), 0 0 25px rgba(255, 255, 0, 0.5);
+    transform: scale(1.05);
+    
+    /* NOVO: Estilos para a peça arrastada no touch */
+    position: absolute; /* Para poder mover livremente com top/left */
+    z-index: 200;       /* Acima de tudo */
+    cursor: grabbing;   /* Mudar o cursor para indicar que está sendo arrastada */
+}
+
+/* ... seu CSS existente continua ... */
+
+/* Adicione estas media queries para o mobile, ajustando o tamanho do h1 */
+@media (max-width: 550px) {
+    h1 {
+        font-size: 1.8em; /* Título menor para caber */
+        text-align: center;
+        padding: 0 10px; /* Adiciona um pouco de padding para não grudar nas bordas */
+    }
+
+    /* ... outras regras existentes aqui ... */
 }
 
 /* Adicione esta regra para o slot de destino */
