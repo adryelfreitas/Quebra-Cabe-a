@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'gato_2.jpg',
         'gato_3.jpg',
         // NOVAS IMAGENS DO HOMEM-ARANHA MILES MORALES (adicione aqui!)
-        'miles_morales_1.jpg', // Adicione esta linha (e ajuste o nome se for diferente)
+        'miles_morales_top.jpg', // Adicione esta linha (e ajuste o nome se for diferente)
         // 'miles_morales_2.jpg', // Se tiver mais, adicione aqui
         // 'miles_morales_3.jpg', // E aqui
     ];
