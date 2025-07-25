@@ -36,16 +36,20 @@ document.addEventListener('DOMContentLoaded', () => {
         'gato_quadrado.jpg',
         'gato_2.jpg',
         'gato_3.jpg',
-        'miles_morales_1.jpg',
+        // NOVAS IMAGENS DO HOMEM-ARANHA MILES MORALES (adicione aqui!)
+        'miles_morales_1.jpg', // Adicione esta linha (e ajuste o nome se for diferente)
+        // 'miles_morales_2.jpg', // Se tiver mais, adicione aqui
+        // 'miles_morales_3.jpg', // E aqui
     ];
 
     const matueSongs = [
         { name: '333', file: 'matue_333.mp3' },
         { name: 'Imagina esse Cenário', file: 'matue_imagina_cenario.mp3' },
         { name: 'Isso é Sério', file: 'matue_isso_e_serio.mp3' },
-        { name: 'Sunflower', file: 'post_malone_sunflower.mp3' },
-        { name: 'Pretty Little Girl', file: 'teto_pretty_little_girl.mp3' },
-        { name: 'Estresse', file: 'alee_estresse.mp3' },
+        // NOVAS MÚSICAS (adicione aqui!)
+        { name: 'Sunflower', file: 'post_malone_sunflower.mp3' }, // Adicione esta linha
+        { name: 'Pretty Little Girl', file: 'teto_pretty_little_girl.mp3' }, // Adicione esta linha
+        { name: 'Estresse', file: 'alee_estresse.mp3' }, // Adicione esta linha
     ];
 
     let currentSongIndex = 0;
@@ -57,15 +61,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let pieceSize;
 
     let pieces = [];
-    let currentDragPiece = null; // Para mouse drag
-    let currentTouchPiece = null; // Para touch drag
-
-    // Variáveis para touch drag
-    let initialTouchX = 0;
-    let initialTouchY = 0;
-    let touchOffsetX = 0;
-    let touchOffsetY = 0;
-
+    let currentDragPiece = null;
+    let currentImageUrl = '';
 
     let startTime = 0;
     let elapsedTime = 0;
@@ -167,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 1. Criar as peças do quebra-cabeça (Listeners para Mouse E Touch)
+    // 1. Criar as peças do quebra-cabeça (mantida)
     function createPuzzlePieces() {
         currentImageUrl = puzzleImages[Math.floor(Math.random() * puzzleImages.length)];
         document.getElementById('full-puzzle-preview').src = currentImageUrl;
@@ -188,16 +185,9 @@ document.addEventListener('DOMContentLoaded', () => {
             piece.style.width = `${pieceSize}px`;
             piece.style.height = `${pieceSize}px`;
 
-            // ----- LISTENERS PARA MOUSE DRAG & DROP -----
-            piece.setAttribute('draggable', true); // Essencial para mouse drag
+            piece.setAttribute('draggable', true);
             piece.addEventListener('dragstart', handleDragStart);
             piece.addEventListener('dragend', handleDragEnd);
-
-            // ----- LISTENERS PARA TOUCH DRAG & DROP -----
-            piece.addEventListener('touchstart', handleTouchStart, { passive: false });
-            piece.addEventListener('touchmove', handleTouchMove, { passive: false });
-            piece.addEventListener('touchend', handleTouchEnd);
-            piece.addEventListener('touchcancel', handleTouchEnd); // Em caso de interrupção
 
             pieces.push(piece);
         }
@@ -205,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
         pieces.forEach(piece => puzzleContainer.appendChild(piece));
     }
 
-    // 2. Criar os espaços no tabuleiro (Listeners para Mouse Drag & Drop)
+    // 2. Criar os espaços no tabuleiro (mantida)
     function createPuzzleBoardSlots() {
         puzzleBoard.innerHTML = '';
         for (let i = 0; i < totalPieces; i++) {
@@ -216,12 +206,10 @@ document.addEventListener('DOMContentLoaded', () => {
             slot.style.width = `${pieceSize}px`;
             slot.style.height = `${pieceSize}px`;
 
-            // ----- LISTENERS PARA MOUSE DRAG & DROP -----
             slot.addEventListener('dragover', handleDragOver);
             slot.addEventListener('dragenter', handleDragEnter);
             slot.addEventListener('dragleave', handleDragLeave);
-            slot.addEventListener('drop', handleDrop); // drop do mouse
-
+            slot.addEventListener('drop', handleDrop);
             puzzleBoard.appendChild(slot);
         }
     }
@@ -236,29 +224,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ----- FUNÇÕES DE DRAG & DROP PARA MOUSE (Adaptadas) -----
+    // 4. Funções para o arrastar e soltar (mantidas)
     function handleDragStart(event) {
         currentDragPiece = event.target;
         event.dataTransfer.setData('text/plain', event.target.dataset.index);
-        // NOVO: Adiciona um estilo temporário para a peça arrastada para não sumir visualmente
-        currentDragPiece.style.opacity = '0.7'; 
-        currentDragPiece.classList.add('dragging'); // Para brilho/sombra
+        setTimeout(() => {
+            event.target.classList.add('hide');
+            currentDragPiece.classList.add('dragging');
+        }, 0);
     }
 
     function handleDragEnd(event) {
-        currentDragPiece.style.opacity = ''; // Remove o estilo temporário
-        currentDragPiece.classList.remove('dragging'); // Remove brilho/sombra
-        // Remove qualquer destaque de drop target que possa ter sobrado
+        event.target.classList.remove('hide');
+        currentDragPiece.classList.remove('dragging');
         document.querySelectorAll('.puzzle-slot.droptarget').forEach(slot => {
             slot.classList.remove('droptarget');
         });
-        currentDragPiece = null; // Reseta a peça arrastada
     }
 
-    // Feedback visual para mouse (mantido)
     function handleDragOver(event) {
-        event.preventDefault(); // Permite drop
+        event.preventDefault();
     }
+
     function handleDragEnter(event) {
         event.preventDefault();
         const targetSlot = event.target.closest('.puzzle-slot');
@@ -268,6 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
+
     function handleDragLeave(event) {
         const targetSlot = event.target.closest('.puzzle-slot');
         if (targetSlot) {
@@ -275,22 +263,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // LÓGICA DE COLOCAR A PEÇA NO LUGAR (FUNÇÃO AUXILIAR COMPARTILHADA)
-    function placePiece(piece, targetSlot) {
-        if (parseInt(piece.dataset.index) === parseInt(targetSlot.dataset.index)) {
-            targetSlot.appendChild(piece);
-            piece.classList.add('placed');
-            piece.style.cursor = 'default';
-            moves++;
-            movesDisplay.textContent = moves;
-            correctPieceSound.play().catch(e => console.log("Erro ao tocar som de peça correta:", e));
-            checkWin();
-            return true; // Peça colocada com sucesso
-        }
-        return false; // Peça não colocada
-    }
-
-    // FUNÇÃO DE DROP PARA MOUSE (Chama a função auxiliar)
     function handleDrop(event) {
         event.preventDefault();
         const droppedPieceIndex = event.dataTransfer.getData('text/plain');
@@ -300,108 +272,19 @@ document.addEventListener('DOMContentLoaded', () => {
         if (targetSlot) {
             targetSlot.classList.remove('droptarget');
         }
-        
-        if (droppedPiece && targetSlot) { // Certifica-se de que há uma peça e um slot
-            placePiece(droppedPiece, targetSlot);
-        }
-    }
 
-
-    // ----- FUNÇÕES DE DRAG & DROP PARA TOUCH (Completamente Separadas) -----
-    function handleTouchStart(event) {
-        if (event.touches.length === 1) { // Apenas um dedo
-            event.preventDefault(); // Previne rolagem/zoom da página
-            currentTouchPiece = event.target;
-            
-            // Posiciona a peça para ser arrastada livremente
-            currentTouchPiece.style.position = 'absolute';
-            currentTouchPiece.style.zIndex = '200';
-            currentTouchPiece.style.opacity = '0.7'; // Feedback visual
-            currentTouchPiece.classList.add('dragging'); // Para brilho/sombra
-
-            // Calcula o offset inicial (onde o dedo tocou na peça)
-            const rect = currentTouchPiece.getBoundingClientRect();
-            initialTouchX = event.touches[0].clientX;
-            initialTouchY = event.touches[0].clientY;
-            touchOffsetX = initialTouchX - rect.left;
-            touchOffsetY = initialTouchY - rect.top;
-        }
-    }
-
-    function handleTouchMove(event) {
-        if (currentTouchPiece && event.touches.length === 1) {
-            event.preventDefault(); // Previne rolagem/zoom da página
-            const touchX = event.touches[0].clientX;
-            const touchY = event.touches[0].clientY;
-
-            // Move a peça para seguir o dedo, ajustando pelo offset inicial
-            currentTouchPiece.style.left = `${touchX - touchOffsetX}px`;
-            currentTouchPiece.style.top = `${touchY - touchOffsetY}px`;
-
-            // Feedback visual do slot alvo (simula dragenter/dragleave para touch)
-            const targetSlot = getDropTargetForTouch(touchX, touchY);
-            // Limpa o droptarget de todos os slots primeiro, exceto o atual
-            document.querySelectorAll('.puzzle-slot.droptarget').forEach(slot => {
-                if (slot !== targetSlot) slot.classList.remove('droptarget');
-            });
-
-            if (targetSlot && !targetSlot.children.length) {
-                if (parseInt(currentTouchPiece.dataset.index) === parseInt(targetSlot.dataset.index)) {
-                    targetSlot.classList.add('droptarget');
-                }
+        if (targetSlot && !targetSlot.children.length) {
+            if (parseInt(droppedPiece.dataset.index) === parseInt(targetSlot.dataset.index)) {
+                targetSlot.appendChild(droppedPiece);
+                droppedPiece.classList.add('placed');
+                droppedPiece.style.cursor = 'default';
+                moves++;
+                movesDisplay.textContent = moves;
+                correctPieceSound.play().catch(e => console.log("Erro ao tocar som de peça correta:", e));
+                checkWin();
             }
         }
     }
-
-    function handleTouchEnd(event) {
-        if (currentTouchPiece) {
-            const touch = event.changedTouches[0]; // Pega a posição do toque final
-            const targetSlot = getDropTargetForTouch(touch.clientX, touch.clientY); // Encontra o slot de destino
-
-            // Limpa o droptarget de todos os slots que possam estar destacados
-            document.querySelectorAll('.puzzle-slot.droptarget').forEach(slot => {
-                slot.classList.remove('droptarget');
-            });
-
-            // Tenta colocar a peça no lugar
-            const placed = (targetSlot && !targetSlot.children.length) ? placePiece(currentTouchPiece, targetSlot) : false;
-
-            // Se a peça não foi colocada com sucesso, ou se foi solta fora de um slot válido
-            if (!placed) {
-                // Opcional: fazer a peça "voltar" visualmente à sua posição original
-                // Para simplificar, apenas remove os estilos de arrasto:
-                currentTouchPiece.style.position = '';
-                currentTouchPiece.style.transform = ''; // Limpa qualquer transformação de arrasto
-                currentTouchPiece.style.left = '';
-                currentTouchPiece.style.top = '';
-                currentTouchPiece.style.zIndex = '';
-                currentTouchPiece.style.opacity = '';
-                currentTouchPiece.classList.remove('dragging');
-            } else {
-                // Se foi colocada, os estilos já são manipulados por placePiece e suas classes
-                currentTouchPiece.style.position = ''; // Remove o absoluto
-                currentTouchPiece.style.left = '';
-                currentTouchPiece.style.top = '';
-                currentTouchPiece.style.zIndex = '';
-                currentTouchPiece.style.opacity = '';
-                currentTouchPiece.classList.remove('dragging');
-            }
-            currentTouchPiece = null; // Reseta a peça touch atual
-        }
-    }
-
-    // NOVO: Função auxiliar para encontrar o slot de drop para eventos de toque
-    function getDropTargetForTouch(x, y) {
-        const slots = document.querySelectorAll('.puzzle-slot');
-        for (let i = 0; i < slots.length; i++) {
-            const rect = slots[i].getBoundingClientRect();
-            if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
-                return slots[i];
-            }
-        }
-        return null;
-    }
-
 
     // 5. Verificar vitória (mantida)
     function checkWin() {
