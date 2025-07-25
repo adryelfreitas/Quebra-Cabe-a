@@ -190,8 +190,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // REMOVIDO: dragstart, dragend
             // ADICIONADO: Eventos de TOUCH para mobile
-            piece.addEventListener('touchstart', handleTouchStart);
-            piece.addEventListener('touchmove', handleTouchMove);
+            piece.addEventListener('touchstart', handleTouchStart, { passive: false });
+            piece.addEventListener('touchmove', handleTouchMove, { passive: false });
             piece.addEventListener('touchend', handleTouchEnd);
             piece.addEventListener('touchcancel', handleTouchEnd); // Em caso de interrupção
 
