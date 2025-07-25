@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quebra-Cabeça!</title>
+      <link rel="icon" type="image/jpg" href="favicon.jpg">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Monte este Quebra-Cabeça!</h1>
+
+    <div class="audio-player">
+        <p id="current-song-title">Música: Nenhuma</p>
+        <div class="audio-controls">
+            <button id="prev-song-btn" title="Música Anterior">⏮</button>
+            <button id="play-pause-btn" title="Reproduzir/Pausar">▶</button>
+            <button id="next-song-btn" title="Próxima Música">⏭</button>
+        </div>
+        <audio id="matue-music" controls>
+            Seu navegador não suporta o elemento de áudio.
+        </audio>
+    </div>
+
+    <div class="game-stats">
+        <p>Tempo: <span id="timer">00:00</span></p>
+        <p>Movimentos: <span id="moves">0</span></p>
+    </div>
+
+    <div class="difficulty-selector">
+        <p>Dificuldade:</p>
+        <button id="easy-btn" data-gridsize="6">Fácil (6x6)</button>
+        <button id="medium-btn" data-gridsize="8">Médio (8x8)</button>
+        <button id="hard-btn" data-gridsize="10">Difícil (10x10)</button>
+    </div>
+
+    <div id="puzzle-wrapper">
+        <div id="puzzle-container">
+            </div>
+        <div id="puzzle-board">
+            </div>
+    </div>
+
+    <div class="game-buttons">
+        <button id="reset-button">Reiniciar Quebra-Cabeça</button>
+        <button id="help-button">Ajuda</button>
+    </div>
+
+    <div id="win-screen" class="hidden">
+        <div class="win-content">
+            <h2>Uau! Encaixou perfeitamente!</h2>
+            <p>Às vezes, as melhores combinações são as mais inesperadas. Será que ainda temos muito o que encaixar?</p>
+            <button id="play-again-btn">Jogar Novamente</button>
+        </div>
+    </div>
+
+    <div class="preview-container">
+        <p>Visualizar Imagem Completa:</p>
+        <img id="full-puzzle-preview" src="gato_quadrado.jpg" alt="Imagem Completa do Quebra-Cabeça">
+    </div>
+
+    <div id="image-modal" class="hidden">
+        <span class="close-modal">&times;</span>
+        <img class="modal-content" id="img-ampliada">
+    </div>
+
+    <div id="help-modal" class="hidden">
+        <div class="modal-content">
+            <span class="close-modal-help">&times;</span>
+            <h2>Como Jogar?</h2>
+            <p>
+                Este é um quebra-cabeça de arrastar e soltar! Seu objetivo é montar a imagem completa.
+            </p>
+            <ul>
+                <li><strong>Arraste as Peças:</strong> Clique e segure uma peça do lado esquerdo e arraste-a para o lado direito.</li>
+                <li><strong>Solte no Lugar Certo:</strong> Solte a peça no quadrado correspondente do tabuleiro. O quadrado certo ficará verde!</li>
+                <li><strong>Controle o Tempo e Movimentos:</strong> Acompanhe seu progresso nos contadores acima.</li>
+                <li><strong>Dificuldade:</strong> Escolha a dificuldade (6x6, 8x8, 10x10) para mais ou menos peças.</li>
+                <li><strong>Música:</strong> Use os controles de áudio para dar Play/Pause, pular músicas ou ajustar o volume no player padrão.</li>
+                <li><strong>Visualizar Imagem:</strong> Clique na imagem pequena no canto superior direito para ver a imagem completa e ter uma referência.</li>
+            </ul>
+            <p>Divirta-se montando seu quebra-cabeça!</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
